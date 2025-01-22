@@ -47,38 +47,6 @@ public class CreateTest extends TestNGCitrusSpringSupport {
                                 "\"wingsState\": \"" + wingsState + "\"\n" + "}"));
     }
 
-    public void deleteDuck(TestCaseRunner runner, String id) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .send()
-                        .delete("/api/duck/delete")
-                        .queryParam("id", id));
-    }
-
-    public void getDuckId(TestCaseRunner runner) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
-    }
-
-    public void validateResponse(TestCaseRunner runner, String responseMessage) {
-        runner.$(
-                http()
-                        .client("http://localhost:2222")
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(responseMessage));
-    }
-
     public void validateResponseJsonPath(TestCaseRunner runner, JsonPathMessageValidationContext.Builder body) {
         runner.$(
                 http()

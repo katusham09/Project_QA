@@ -7,23 +7,21 @@ import com.consol.citrus.annotations.CitrusTest;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
-import static com.consol.citrus.validation.json.JsonPathMessageValidationContext.Builder.jsonPath;
-
 public class PropertiesTest extends DuckActionsClient {
     @Test(description = "Проверка получения характеристик уточки с четным id и material = wood")
     @CitrusTest
     public void checkDuckWithEvenIdr(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 0.03, "wood", "quack", "ACTIVE");
         getDuckId(runner);
-        runner.$(action -> {
-            String duckId = action.getVariable("duckId");
-            if (Integer.parseInt(duckId) % 2 != 0) {
-                deleteDuck(runner, duckId);
-                createDuck(runner, "yellow", 0.03, "wood", "quack", "ACTIVE");
-                getDuckId(runner);
-            }});
+        oddParityCheck(runner, "${duckId}", "wood");
         propertiesDuck(runner, "${duckId}");
-        validateResponseJsonPath(runner, jsonPath().expression("$.material", "wood"));
+        validateResponse(runner, "{\n" +
+                "\"color\": \"yellow\",\n" +
+                "\"height\": 0.03,\n" +
+                "\"material\": \"wood\",\n" +
+                "\"sound\": \"quack\",\n" +
+                "\"wingsState\": \"ACTIVE\"\n" +
+                "}");
         deleteDuck(runner, "${duckId}");
     }
 
@@ -32,15 +30,15 @@ public class PropertiesTest extends DuckActionsClient {
     public void checkDuckWithOddIdr(@Optional @CitrusResource TestCaseRunner runner) {
         createDuck(runner, "yellow", 0.03, "rubber", "quack", "ACTIVE");
         getDuckId(runner);
-        runner.$(action -> {
-            String duckId = action.getVariable("duckId");
-            if (Integer.parseInt(duckId) % 2 != 0) {
-                deleteDuck(runner, duckId);
-                createDuck(runner, "yellow", 0.03, "rubber", "quack", "ACTIVE");
-                getDuckId(runner);
-            }});
+        parityCheck(runner, "${duckId}", "rubber");
         propertiesDuck(runner, "${duckId}");
-        validateResponseJsonPath(runner, jsonPath().expression("$.material", "rubber"));
+        validateResponse(runner, "{\n" +
+                "\"color\": \"yellow\",\n" +
+                "\"height\": 0.03,\n" +
+                "\"material\": \"rubber\",\n" +
+                "\"sound\": \"quack\",\n" +
+                "\"wingsState\": \"ACTIVE\"\n" +
+                "}");
         deleteDuck(runner, "${duckId}");
     }
 }

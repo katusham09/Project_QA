@@ -13,31 +13,18 @@ public class QuackTest extends DuckActionsClient {
     public void quackWithEvenId (@Optional @CitrusResource TestCaseRunner runner){
         createDuck(runner, "yellow", 0.03, "rubber", "quack", "ACTIVE");
         getDuckId(runner);
-        runner.$(action -> {
-            String duckId = action.getVariable("duckId");
-            if (Integer.parseInt(duckId) % 2 != 0) {
-                deleteDuck(runner, duckId);
-                createDuck(runner, "yellow", 0.03, "rubber", "quack", "ACTIVE");
-                getDuckId(runner);
-            }});
+        oddParityCheck(runner, "${duckId}", "rubber");
         quack(runner, "${duckId}", "3", "2");
         validateResponse(runner, "{ \"sound\": \"quack-quack, quack-quack, quack-quack\" }");
         deleteDuck(runner, "${duckId}");
     }
-
 
     @Test(description = "Проверка кряканья уточки с нечётным id")
     @CitrusTest
     public void quackWithOddId (@Optional @CitrusResource TestCaseRunner runner){
         createDuck(runner, "yellow", 0.03, "rubber", "quack", "ACTIVE");
         getDuckId(runner);
-        runner.$(action -> {
-            String duckId = action.getVariable("duckId");
-            if (Integer.parseInt(duckId) % 2 == 0) {
-                deleteDuck(runner, "${duckId}");
-                createDuck(runner, "yellow", 0.03, "rubber", "quack", "ACTIVE");
-                getDuckId(runner);
-            }});
+        parityCheck(runner, "${duckId}", "rubber");
         quack(runner, "${duckId}", "3", "2");
         validateResponse(runner, "{ \"sound\": \"quack-quack, quack-quack, quack-quack\" }");
         deleteDuck(runner, "${duckId}");

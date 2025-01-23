@@ -3,9 +3,7 @@ package autotests.clients;
 import autotests.EndpointConfig;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.http.client.HttpClient;
-import com.consol.citrus.message.MessageType;
 import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
-import com.consol.citrus.validation.json.JsonPathMessageValidationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -79,18 +77,6 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                         .body("{\n" + "  \"message\": \"" + expectedMessage + "\"\n" + "}"));
     }
 
-    public void validateResponseJsonPath(TestCaseRunner runner, JsonPathMessageValidationContext.Builder body) {
-        runner.$(
-                http()
-                        .client(duckService)
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .type(MessageType.JSON)
-                        .validate(body)
-        );
-    }
-
     public void duckSwim(TestCaseRunner runner, String id) {
         runner.$(
                 http()
@@ -144,5 +130,25 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                         .queryParam("sound", sound)
                         .queryParam("wingsState", wingsState)
         );
+    }
+
+    public void parityCheck(TestCaseRunner runner, String id, String material) {
+        runner.$(action -> {
+            String duckId = action.getVariable(id);
+            if (Integer.parseInt(duckId) % 2 == 0) {
+                deleteDuck(runner, duckId);
+                createDuck(runner, "yellow", 0.03, material, "quack", "ACTIVE");
+                getDuckId(runner);
+            }});
+    }
+
+    public void oddParityCheck(TestCaseRunner runner, String id, String material) {
+        runner.$(action -> {
+            String duckId = action.getVariable(id);
+            if (Integer.parseInt(duckId) % 2 != 0) {
+                deleteDuck(runner, duckId);
+                createDuck(runner, "yellow", 0.03, material, "quack", "ACTIVE");
+                getDuckId(runner);
+            }});
     }
 }

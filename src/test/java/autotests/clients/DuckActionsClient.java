@@ -18,6 +18,8 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
     @Autowired
     protected HttpClient duckService;
 
+    //CRUD methods
+
     public void createDuck(TestCaseRunner runner, String color, double height, String material, String sound, String wingsState) {
         runner.$(
                 http()
@@ -34,6 +36,22 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                                 "\"wingsState\": \"" + wingsState + "\"\n" + "}"));
     }
 
+    public void updateDuck(TestCaseRunner runner, String id, String color, double height, String material, String sound, String wingsState) {
+        runner.$(
+                http()
+                        .client(duckService)
+                        .send()
+                        .put("/api/duck/update")
+                        .message()
+                        .queryParam("id", id)
+                        .queryParam("color", color)
+                        .queryParam("height", String.valueOf(height))
+                        .queryParam("material", material)
+                        .queryParam("sound", sound)
+                        .queryParam("wingsState", wingsState)
+        );
+    }
+
     public void deleteDuck(TestCaseRunner runner, String id) {
         runner.$(
                 http()
@@ -43,39 +61,7 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                         .queryParam("id", id));
     }
 
-    public void getDuckId(TestCaseRunner runner) {
-        runner.$(
-                http()
-                        .client(duckService)
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .extract(fromBody().expression("$.id", "duckId"))
-        );
-    }
-
-    public void validateResponse(TestCaseRunner runner, String responseMessage) {
-        runner.$(
-                http()
-                        .client(duckService)
-                        .receive()
-                        .response(HttpStatus.OK)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body(responseMessage));
-    }
-
-    public void validateErrorResponse(TestCaseRunner runner, HttpStatus expectedStatus, String expectedMessage) {
-        runner.$(
-                http()
-                        .client(duckService)
-                        .receive()
-                        .response(expectedStatus)
-                        .message()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .body("{\n" + "  \"message\": \"" + expectedMessage + "\"\n" + "}"));
-    }
+    // Methods with actions
 
     public void duckSwim(TestCaseRunner runner, String id) {
         runner.$(
@@ -116,19 +102,41 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                         .queryParam("id", id));
     }
 
-    public void updateDuck(TestCaseRunner runner, String id, String color, double height, String material, String sound, String wingsState) {
+    // Validation
+
+    public void validateResponse(TestCaseRunner runner, String responseMessage) {
         runner.$(
                 http()
                         .client(duckService)
-                        .send()
-                        .put("/api/duck/update")
+                        .receive()
+                        .response(HttpStatus.OK)
                         .message()
-                        .queryParam("id", id)
-                        .queryParam("color", color)
-                        .queryParam("height", String.valueOf(height))
-                        .queryParam("material", material)
-                        .queryParam("sound", sound)
-                        .queryParam("wingsState", wingsState)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .body(responseMessage));
+    }
+
+    public void validateErrorResponse(TestCaseRunner runner, HttpStatus expectedStatus, String expectedMessage) {
+        runner.$(
+                http()
+                        .client(duckService)
+                        .receive()
+                        .response(expectedStatus)
+                        .message()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .body("{\n" + "  \"message\": \"" + expectedMessage + "\"\n" + "}"));
+    }
+
+    // Additional methods for extracting id and parity
+
+    public void getDuckId(TestCaseRunner runner) {
+        runner.$(
+                http()
+                        .client(duckService)
+                        .receive()
+                        .response(HttpStatus.OK)
+                        .message()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .extract(fromBody().expression("$.id", "duckId"))
         );
     }
 

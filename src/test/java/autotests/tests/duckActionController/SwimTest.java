@@ -1,6 +1,9 @@
 package autotests.tests.duckActionController;
 
 import autotests.clients.DuckActionsClient;
+import autotests.payloads.Duck;
+import autotests.payloads.Message;
+import autotests.payloads.WingState;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
@@ -12,10 +15,12 @@ public class SwimTest extends DuckActionsClient {
     @Test(description = "Проверка того, что уточка поплыла с существующем id")
     @CitrusTest
     public void successfulSwim(@Optional @CitrusResource TestCaseRunner runner) {
-        createDuck(runner, "yellow", 0.03, "rubber", "quack", "FIXED");
+        Duck duck = new Duck().color("yellow").height(0.03).material("rubber").sound("quack").wingsState(WingState.ACTIVE);
+        createDuck(runner, duck);
         getDuckId(runner);
         duckSwim(runner, "${duckId}");
-        validateResponse(runner, "{\n"+ "  \"message\": \"I'm swimming\"\n"+ "}");
+        Message message = new Message().message("I'm swimming");
+        validateResponse(runner, message);
         deleteDuck(runner, "${duckId}");
     }
 
